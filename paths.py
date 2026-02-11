@@ -9,7 +9,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 KNN = PROJECT_ROOT / 'Model' / 'KNN.py'
-TWITTER-HUMAN-DATASET = PROJECT_ROOT / 'Datasets' / 'twitter-human-bots.csv'
+TWITTER_HUMAN_DATASET = PROJECT_ROOT / 'Datasets' / 'twitter-human-bots.csv'
 
 # if __name__ == "__main__":
 #     print("HELLO")

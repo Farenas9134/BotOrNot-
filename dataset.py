@@ -1,4 +1,5 @@
 import pandas as pd
+from paths import *
 # from googletrans import Translator
 # from langdetect import detect, DetectorFactory, LangDetectException
 
