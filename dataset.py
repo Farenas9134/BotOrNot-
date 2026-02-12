@@ -22,7 +22,7 @@ def main():
 
     english_df = df.drop(index=removed_rows)
 
-    english_df.to_csv("twitter-human-bots-english.csv")
+    english_df.to_csv("twitter-human-bots-english.csv", index=False)
 
 
 main()
