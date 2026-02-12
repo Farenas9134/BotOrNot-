@@ -1,30 +1,28 @@
 import pandas as pd
-from paths import *
-# from googletrans import Translator
-# from langdetect import detect, DetectorFactory, LangDetectException
+from langdetect import detect, DetectorFactory, LangDetectException
 
-# translator = Translator()
+DetectorFactory.seed = 0 # for consistent results
 
-# def is_english(text):
-#     result = translator.detect(text)
-#     return result.lang == 'en' and result.confidence > 0.9
-
-# print(is_english("I love programming in Python.")) # True
-# print(is_english("Me gusta programar en Python.")) # False
+def is_english(text):
+    try:
+        return detect(text) == 'en'
+    except:
+        return False
 
 def main():
     # Loads in the dataset
-    df = pd.read_csv("hf://datasets/airt-ml/twitter-human-bots/twitter_human_bots_dataset.csv")
-
-    df.to_csv("twitter-human-bots.csv", index=False)
-
-    # print(df.head())
-
-    # removed_rows = []
-    # for index, row in df.iterrows():
-    #     if not is_english(row['description']):
-    #         removed_rows.append(index)
+    df = pd.read_csv("Datasets/twitter-human-bots.csv")
     
-    # print(removed_rows)
+    # Keeps track of all the entries that have a non-English tweet. 
+    removed_rows = []
+    for index, row in df.iterrows():
+        if not is_english(row['description']):
+            removed_rows.append(index)
+    
+
+    english_df = df.drop(index=removed_rows)
+
+    english_df.to_csv("twitter-human-bots-english.csv")
+
 
 main()
