@@ -21,7 +21,7 @@ def addTweet(tweet, rows):
     return
 
 def extractTweet(tweet):
-    tweet_Feature = {'tweet_length':0, "vulgar":0}
+    tweet_Feature = {'tweet_length':0}
     tweet_Feature["tweet_length"] = len(tweet)
 
     return tweet_Feature
