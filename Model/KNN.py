@@ -1,10 +1,3 @@
-# Modified from materials from Stanford.
-# Please do not change the class names or method signatures
-# (i.e., method names or parameters), or code within the provided methods
-# except between the parts indicating the start and end of your code.
-# If you wish, you may add additional helper methods or functions. If
-# you do so, please be sure they're well documented.
-
 from builtins import range
 from builtins import object
 import numpy as np
@@ -23,14 +16,39 @@ def compute_accuracy(y_pred, y_true):
     - accuracy: A float representing the proportion of predictions in y_pred that
          are correct.
     """
-    accuracy = -1
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-
-
+    numvalues = y_pred.shape[0]
+    count = 0
+    for i in range(numvalues):
+        if y_pred[i] == y_true[i]:
+            count += 1
+            
+    accuracy = count / numvalues
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     return accuracy
 
+def compute_accuracy_class(y_pred, y_true):
+    numvalues = y_pred.shape[0]
+    classAppearances = {}
+    classCorrect = {}
+
+    for i in range(numvalues):
+        if y_pred[i] not in classAppearances:
+            classAppearances[y_pred[i]] = 0
+
+        classAppearances[y_pred[i]] += 1
+
+        if y_pred[i] == y_true[i]:
+            if y_pred[i] not in classCorrect:
+                classCorrect[y_pred[i]] = 0
+
+            classCorrect[y_pred[i]] += 1
+    
+    classAccuracy = []
+    for j in range(0, 10):
+        classAccuracy.append(classCorrect[j] / classAppearances[j])
+        
+    return classAccuracy
 class KNearestNeighbor(object):
     """ a kNN classifier with L2 distance """
 
@@ -77,77 +95,6 @@ class KNearestNeighbor(object):
 
         return self.predict_labels(dists, k=k)
 
-    def compute_distances_two_loops(self, X):
-        """
-        Compute the distance between each test point in X and each training point
-        in self.X_train using a nested loop over both the training data and the
-        test data.
-
-        Inputs:
-        - X: A numpy array of shape (num_test, D) containing test data.
-
-        Returns:
-        - dists: A numpy array of shape (num_test, num_train) where dists[i, j]
-          is the Euclidean distance between the ith test point and the jth training
-          point.
-        """
-        num_test = X.shape[0]
-        num_train = self.X_train.shape[0]
-        dists = np.zeros((num_test, num_train))
-        for i in range(num_test):
-            for j in range(num_train):
-                #####################################################################
-                # TODO:                                                             #
-                # Compute the l2 distance between the ith test point and the jth    #
-                # training point, and store the result in dists[i, j]. You should   #
-                # not use a loop over dimension, nor use np.linalg.norm().          #
-                # HINT: Look back at the numpy section of PS0, and experiment       #
-                # with the interpreter or notebook with small examples              #
-                # What happens if you subtract one vector from another without      #
-                # looping over each entry?                                          #
-                #####################################################################
-                # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-                diff = X[i] - self.X_train[j]
-
-                distance = np.sqrt(np.sum(diff**2))
-                dists[i][j] = distance
-
-                # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        return dists
-
-    def compute_distances_one_loop(self, X):
-        """
-        Compute the distance between each test point in X and each training point
-        in self.X_train using a single loop over the test data.
-
-        Input / Output: Same as compute_distances_two_loops
-        """
-        num_test = X.shape[0]
-        num_train = self.X_train.shape[0]
-        dists = np.zeros((num_test, num_train))
-        for i in range(num_test):
-            #######################################################################
-            # TODO:                                                               #
-            # Compute the l2 distance between the ith test point and all training #
-            # points, and store the result in dists[i, :].                        #
-            # Do not use np.linalg.norm().                                        #
-            # HINT: Start from your two loops version and modify it               #
-            # Print out shapes to better understand what's going on.              #
-            #######################################################################
-            # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-            diff = X[i] - self.X_train
-            print(diff)
-            diff = diff**2
-    
-            # distance = np.sqrt(np.sum(diff**2))
-            # dists[i] = distance
-            
-            print("dist:", diff)
-
-            # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        return dists
-
     def compute_distances_no_loops(self, X):
         """
         Compute the distance between each test point in X and each training point
@@ -180,27 +127,17 @@ class KNearestNeighbor(object):
             # A list of length k storing the labels of the k nearest neighbors to
             # the ith test point.
             closest_y = []
-            #########################################################################
-            # TODO:                                                                 #
-            # Use the distance matrix to find the k nearest neighbors of the ith    #
-            # testing point, and use self.y_train to find the labels of these       #
-            # neighbors. Store these labels in closest_y.                           #
-            # Hint: Look up the function numpy.argsort in the numpy documentation.  #
-            #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+            # Index 0 will give the index of the smallest distance
+            closestList = np.argsort(dists[i])
+            for j in range(k):
+                closestIndex = closestList[j]
+                closest_y.append(self.y_train[closestIndex])
+
+            # print("k-nearest neighbors", closest_y)
+
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-            #########################################################################
-            # TODO:                                                                 #
-            # Now that you have found the labels of the k nearest neighbors, you    #
-            # need to find the most common label in the list closest_y of labels.   #
-            # Store this label in y_pred[i]. Break ties by choosing the smaller     #
-            # label.                                                           
-            # Hint: there are many ways to do this problem. One way involves using  #
-            # the np function bincount (look it up in the documentation) and then   #
-            # using np.argmax, which conveniently breaks ties by choosing the       # 
-            # smallest index.                              
-            #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
             counts = np.bincount(closest_y)
