@@ -8,8 +8,14 @@ from pathlib import Path
 # BotOrNot path file
 PROJECT_ROOT = Path(__file__).resolve().parent
 
+# Important Files
 KNN = PROJECT_ROOT / 'Model' / 'KNN.py'
-TWITTER_HUMAN_DATASET = PROJECT_ROOT / 'Datasets' / 'twitter-human-bots.csv'
+MANAGER = PROJECT_ROOT / 'Model' / 'manager.py'
+GRAPH = PROJECT_ROOT / 'Model' / 'graph.py'
+
+# Datasets
+TWITTER_HUMAN_DATASET = PROJECT_ROOT / 'Datasets' / 'twitter-human-bots-english.csv'
+
 
 # if __name__ == "__main__":
 #     print("HELLO")
