@@ -15,12 +15,16 @@ if __name__ == "__main__":
     twitter_dataset_csv_df = pd.read_csv(TWITTER_HUMAN_DATASET)
 
     # Checking each column feature, cvs is nasty
-    # print(twitter_dataset_csv_df.columns)
+    print(twitter_dataset_csv_df.columns)
 
-    # Extract features from each tweet and replace tweet column with these new extracted features
+    # Extract features from each tweet
     tweet_column = twitter_dataset_csv_df.loc[:, 'description':'description']
-    extracted_tweet_feature_df = setFeaturesdf(tweet_column)
 
+    # Returns extracted tweets as a df of shape (N, E), where E is the total of features extracted
+    extracted_tweet_feature_df = setFeaturedf(tweet_column)
+
+    # Replace tweet column with new df
+    # write code to do this ^
 
     # Split dataset into features and labels
     X = twitter_dataset_csv_df.loc[:, 'Unnamed: 0':'account_age_days']
