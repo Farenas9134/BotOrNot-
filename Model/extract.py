@@ -37,7 +37,7 @@ def extractTweet(tweet):
                      "tweet_entropy":0, "tweet_'bot'_count":0, "tweet_hashtag_count":0,
                      "tweet_url_count":0, "tweet_unique_url_count":0, "tweet_unique_mention_count":0,
                      "tweet_fraction_lowercase_words":0, "tweet_fraction_uppercase_words":0, "tweet_word_count":0,
-                     }
+                     "tweet_sentence_count":0, "tweet_avg_word_length":0, "tweet_avg_word_per_sentence": 0}
 
     # Extract tweet length
     tweet_Feature["tweet_length"] = len(tweet)
@@ -78,13 +78,32 @@ def extractTweet(tweet):
     all_words = lower_case_words + upper_case_words
 
     # Extract fraction of words in lowercase
-    # add edge case in case all words are not 0
+    # add edge case in case all words is 0
     tweet_Feature["tweet_fraction_lowercase_words"] = len(lower_case_words) / len(all_words)
 
     # Extract fraction of words in uppercase
     tweet_Feature["tweet_fraction_uppercase_words"] = len(upper_case_words) / len(all_words)
 
+    # Extract count of words in tweet
+    tweet_Feature["tweet_word_count"] = len(all_words)
 
+    # Extract count of sentences in tweet
+    sentence_count = re.findall(r"[^.!?]+[.!?]+" , string)
+    tweet_Feature["tweet_sentence_count"] = len(sentence_count)
+
+    # Extract average word length
+    unique_words = Counter(all_words)
+    total_word_len = 0
+    for word in unique_words.keys():
+        total_word_len += len(word)
+    
+    avg_word_length = len(unique_words.keys()) / total_word_len
+    tweet_Feature["tweet_avg_word_length"] = avg_word_length
+
+    # Extract avgerage words per sentence
+    avg_word_per_sentence = len(all_words) / len(sentence_count)
+    tweet_Feature["tweet_avg_word_per_sentence"] = avg_word_per_sentence
+    
     return tweet_Feature
 
 def getCharBigrams(given_string):
@@ -147,7 +166,7 @@ def compute_entropy(string):
     return entropy
 
 if __name__ == "__main__":
-    string = "hello well-known I am don't call me bot Bot bot bot HAHAHAHA Yeah #amazing # yeah #YEAHHHAomg http://yeah https://oops @Poop912"
+    string = "hello well-known I am don't call me bot Bot bot bot HAHAHAHA Yeah #amazing # yeah #YEAHHHAomg http://yeah https://oops @Poop912. Yay! omg cool."
     bigrams = getWordBigrams(string)
     total_bigrams = sum(bigrams.values())
     unique_bigrams = len(bigrams.keys())
@@ -176,4 +195,17 @@ if __name__ == "__main__":
     all_words = lower_case_words + upper_case_words
     print("all:", all_words)
 
+    sentence_count = re.findall(r"[^.!?]+[.!?]+" , string)
+    print("sentences:", sentence_count)
     print("Entropy:", compute_entropy(string))
+
+    unique_words = Counter(all_words)
+    total_word_len = 0
+    for word in unique_words.keys():
+        total_word_len += len(word)
+    
+    avg_word_len = len(unique_words.keys()) / total_word_len
+    print("avg word len:", avg_word_len)
+
+    avg_word_per_sentence = len(all_words) / len(sentence_count)
+    print("avg words per sentence:", avg_word_per_sentence)
