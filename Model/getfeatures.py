@@ -53,7 +53,6 @@ def countMentions(tweet):
 '''
     Finds the number of repeated words in a tweet
 '''
-# THIS DOESN'T DIFFERENTIATE BETWEEN CAPITAL VS LOWERCASE AS IT IS
 def countRepeats(tweet):
     word_dict = {}
     repeated_words = {}
@@ -61,13 +60,14 @@ def countRepeats(tweet):
     split_tweet = splitTweet(tweet)
 
     for word in split_tweet:
-        if word not in word_dict:
-            word_dict[word] = 1
+        if word.lower() not in word_dict:
+            word_dict[word.lower()] = 1
         else:
-            if word not in repeated_words:
-                repeated_words[word] = 1
+            if word.lower() not in repeated_words:
+                # Means that it has shown up twice so far
+                repeated_words[word.lower()] = 2
             else:
-                repeated_words[word] += 1
+                repeated_words[word.lower()] += 1
     
     return repeated_words
 
@@ -119,6 +119,10 @@ def countSpecialChars(tweet):
 
     return special_chars
 
+'''
+    Returns a dictionary with the number of times certain parts of speech show up
+    i.e. number of nouns, number of verbs, number of adverbs
+'''
 def countPartsOfSpeech(tweet):
     nlp = spacy.load("en_core_web_sm")
 
@@ -147,16 +151,16 @@ def countPartsOfSpeech(tweet):
 
 def main():
     # df = pd.read_csv("Datasets/twitter-human-bots-english.csv")
-    sample_tweet = "Loan coach at @mancity & Aspiring DJ #soccer #music @"
+    sample_tweet = "Loan coach at @mancity & Aspiring DJ loan loan #soccer #music @"
     # sample_tweet = "I'm doing this quickly"
 
     # print(countWords(sample_tweet))
     # print(countHashtag(sample_tweet))
     # print(countMentions(sample_tweet))
-    # print(countRepeats(sample_tweet))
+    print(countRepeats(sample_tweet))
     # print(questionCount(sample_tweet))
     # print(countSpecialChars(sample_tweet))
-    print(countPartsOfSpeech(sample_tweet))
+    # print(countPartsOfSpeech(sample_tweet))
 
 
 main()
