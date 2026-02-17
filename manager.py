@@ -20,8 +20,11 @@ if __name__ == "__main__":
     # Extract features from each tweet
     tweet_column = twitter_dataset_csv_df.loc[:, 'description':'description']
 
-    # Returns extracted tweets as a df of shape (N, E), where E is the total of features extracted
-    extracted_tweet_feature_df = setFeaturedf(tweet_column)
+    # Extract features from screen name
+    screen_name_column = twitter_dataset_csv_df.loc[:, 'screen_name':'screen_name']
+
+    # Returns extracted tweets and names as a df of shape (N, E), where E is the total of features extracted
+    extracted_tweet_features_df, extracted_name_features_df = setFeaturesdf(tweet_column, screen_name_column)
 
     # Replace tweet column with new df
     # write code to do this ^
