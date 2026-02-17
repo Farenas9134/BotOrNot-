@@ -21,21 +21,6 @@ def countWords(tweet):
     return length
 
 '''
-    Finds the number of hashtags in a tweet
-    i.e. #cool but not #
-'''
-def countHashtag(tweet):
-    num_hashtags = 0
-
-    split_tweet = splitTweet(tweet)
-
-    for word in split_tweet:
-        if word[0] == "#" and len(word) > 1:
-            num_hashtags += 1
-
-    return num_hashtags
-
-'''
     Finds the number of mentions in a tweet
     i.e. @coolguy123 but not @
 '''
@@ -137,7 +122,7 @@ def countPartsOfSpeech(tweet):
         if token.pos_ == "NOUN":
             noun_list.append(token)
         elif token.pos_ == "ADJ":
-            adjective_list.apppend(token)
+            adjective_list.append(token)
         elif token.pos_ == "VERB":
             verb_list.append(token)
         elif token.pos_ == "PRON":
@@ -149,18 +134,18 @@ def countPartsOfSpeech(tweet):
 
     return parts_of_speech_dict
 
-def main():
-    # df = pd.read_csv("Datasets/twitter-human-bots-english.csv")
-    sample_tweet = "Loan coach at @mancity & Aspiring DJ loan loan #soccer #music @"
-    # sample_tweet = "I'm doing this quickly"
+# def main():
+#     # df = pd.read_csv("Datasets/twitter-human-bots-english.csv")
+#     sample_tweet = "Loan coach at @mancity & Aspiring DJ loan loan #soccer #music @"
+#     # sample_tweet = "I'm doing this quickly"
 
-    # print(countWords(sample_tweet))
-    # print(countHashtag(sample_tweet))
-    # print(countMentions(sample_tweet))
-    print(countRepeats(sample_tweet))
-    # print(questionCount(sample_tweet))
-    # print(countSpecialChars(sample_tweet))
-    # print(countPartsOfSpeech(sample_tweet))
+#     # print(countWords(sample_tweet))
+#     # print(countHashtag(sample_tweet))
+#     # print(countMentions(sample_tweet))
+#     # print(countRepeats(sample_tweet))
+#     # print(questionCount(sample_tweet))
+#     # print(countSpecialChars(sample_tweet))
+#     # print(countPartsOfSpeech(sample_tweet))
 
 
-main()
+# main()
