@@ -2,6 +2,7 @@ import pandas as pd
 import re
 import math
 from collections import Counter
+from Model.getfeatures import *
 
 '''
     File to extract features from a column of tweets
@@ -65,7 +66,9 @@ def extractTweetFeatures(tweet):
                      "tweet_entropy":0, "tweet_'bot'_count":0, "tweet_hashtag_count":0,
                      "tweet_url_count":0, "tweet_unique_url_count":0, "tweet_unique_mention_count":0,
                      "tweet_fraction_lowercase_words":0, "tweet_fraction_uppercase_words":0, "tweet_word_count":0,
-                     "tweet_sentence_count":0, "tweet_avg_word_length":0, "tweet_avg_word_per_sentence": 0}
+                     "tweet_sentence_count":0, "tweet_avg_word_length":0, "tweet_avg_word_per_sentence": 0, 
+                    "tweet_repeated_words":0, "tweet_question_count":0, "tweet_exclamation_count":0, "tweet_special_characters":0,
+                    "tweet_noun_counts":0, "tweet_adjective_count":0, "tweet_adverb_count":0, "tweet_verb_count":0, "tweet_pronoun_count":0}
 
     # Extract tweet length
     tweet_Feature["tweet_length"] = len(tweet)
@@ -90,7 +93,7 @@ def extractTweetFeatures(tweet):
     tweet_Feature["tweet_'bot'_count"] = len(bot_count)
 
     # Extract tweet "#" count
-    hashtag_count = len(re.findall(r"#", tweet))
+    hashtag_count = len(re.findall(r"#.+", tweet))
     tweet_Feature["tweet_hashtag_count"] = hashtag_count
 
     # Extract tweet url count & unique urls
@@ -140,12 +143,32 @@ def extractTweetFeatures(tweet):
     except:
         tweet_Feature["tweet_avg_word_length"] = 0
 
-    # Extract avgerage words per sentence
+    # Extract average words per sentence
     try:
         avg_word_per_sentence = len(all_words) / len(sentence_count)
         tweet_Feature["tweet_avg_word_per_sentence"] = avg_word_per_sentence
     except:
         tweet_Feature["tweet_avg_word_per_sentence"] = 0
+
+    # Find number of repeated words in a tweet
+    tweet_Feature["tweet_repeated_words"] = countRepeats(tweet)
+
+    # Find number of questions and exclamations in a tweet
+    tweet_Feature["tweet_question_count"], tweet_Feature["tweet_exclamation_count"] = getNumQuestionsAndExclamations(tweet)
+
+    # Finds number of special characters in a tweet
+    tweet_Feature["tweet_special_characters"] = countSpecialChars(tweet)
+
+    # Finding parts of speech counts
+
+    pos_dict = countPartsOfSpeech(tweet)
+
+    tweet_Feature["tweet_noun_counts"] = pos_dict["NOUN"]
+    tweet_Feature["tweet_adjective_counts"] = pos_dict["ADJECTIVE"]
+    tweet_Feature["tweet_adverb_counts"] = pos_dict["ADVERB"]
+    tweet_Feature["tweet_verb_counts"] = pos_dict["VERB"]
+    tweet_Feature["tweet_pronoun_counts"] = pos_dict["PRONOUN"]
+
     
     return tweet_Feature
 
@@ -255,10 +278,16 @@ def appendColumns(df, tweet_df, name_df):
 
 def cleanup(df):
     # Removes unessecary columns, moves label to end, & extra
-    df = df.drop(['description', 'screen_name'], axis = 1)
+    df = df.drop(['description', 'screen_name', "Unnamed: 0", "location", "profile_background_image_url", "profile_image_url", "lang"], axis = 1)
 
+    # move location of label to be at the end
     label_column = df.pop('account_type')
-
     df.insert(len(df.columns), 'account_type', label_column)
+
+    # Turn TRUE/FALSE into binary value (0/1)
+    df['default_profile'] = df['default_profile'].astype(int)
+    df["default_profile_image"] = df['default_profile_image'].astype(int)
+    df["verified"] = df["verified"].astype(int)
+    df["account_type"] = df["account_type"].astype(int)
 
     return df
