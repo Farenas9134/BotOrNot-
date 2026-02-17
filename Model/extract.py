@@ -7,26 +7,39 @@ from collections import Counter
     File to extract features from a column of tweets
 '''
 
-def setFeaturesdf(tweet_column, name_column):
+def setFeaturesdf(df):
     '''  
         Creates a pandas data frame of extracted features from tweets & names
     '''
+
+    # Extract features from each tweet
+    tweet_column = df.loc[:, 'description':'description']
+
+    # Extract features from screen name
+    name_column = df.loc[:, 'screen_name':'screen_name']
+
     tweet_rows = []
     name_rows = []
 
+    # Loop through each tweet and grab wanted features
     for tweet in tweet_column['description']:
         addTweet(tweet, tweet_rows)
     
+    # Loop through each name and grab wanted features
     for name in name_column['screen_name']:
         addName(name, name_rows)
 
+    # Convert list into dataframe & store output for debugging
     tweet_df = pd.DataFrame(tweet_rows)
     tweet_df.to_csv('tweet_output.csv', index=False)
 
     name_df = pd.DataFrame(name_rows)
     name_df.to_csv('name_output.csv', index=False)
 
-    return tweet_df, name_df
+    combined_df = appendColumns(df, tweet_df, name_df)
+    cleaned_df = cleanup(combined_df)
+    cleaned_df.to_csv('combined_output.csv', index=False)
+    return cleaned_df
 
 def addTweet(tweet, rows):
     '''
@@ -225,47 +238,27 @@ def compute_entropy(string):
 
     return entropy
 
-if __name__ == "__main__":
-    string = "hello well-known I am don't call me bot Bot bot bot HAHAHAHA Yeah #amazing # yeah #YEAHHHAomg http://yeah https://oops @Poop912. Yay! omg cool."
-    bigrams = getWordBigrams(string)
-    total_bigrams = sum(bigrams.values())
-    unique_bigrams = len(bigrams.keys())
+def appendColumns(df, tweet_df, name_df):
+    '''
+        3. Add in extra columns
+        4. Return new dataframe
+    '''
+    combined_df = 0
+    tweet_index = df.columns.get_loc('description')
+    name_index = df.columns.get_loc('screen_name')
 
-    bot_count = len(re.findall(r"[bB]ot", string))
-    print("Bot count:", bot_count)
+    combined_df = pd.concat([df, tweet_df], axis = 1)
 
-    # Actually grabs all hashtag values, but paper only wants # damn
-    hashtag_count = re.findall(r"#[A-Za-z]*", string)
-    print("Hashtag count:", hashtag_count)
-    
-    # okay did search up all possible chars for a url, but I get regex works & why this works
-    url_count = re.findall(r"https?://[A-Za-z0-9._~:/?#[\]@!$&'()*+,;=%-]+", string)
-    urls = Counter(url_count)
-    print("Urls count:",len(urls.items()))
+    combined_df = pd.concat([combined_df, name_df], axis = 1)
 
-    mentions = Counter(re.findall(r"@[A-Za-z_]+", string))
-    print("mentions count:", mentions)
+    return combined_df
 
-    lower_case_words = re.findall(r"\b[a-z]+(?:[-'][a-z]+)?\b", string)
-    print("lower:", lower_case_words)
+def cleanup(df):
+    # Removes unessecary columns, moves label to end, & extra
+    df = df.drop(['description', 'screen_name'], axis = 1)
 
-    upper_case_words = re.findall(r"\b[A-Z]+(?:[-'][A-Z]+)?\b", string)
-    print("upper:", upper_case_words)
+    label_column = df.pop('account_type')
 
-    all_words = lower_case_words + upper_case_words
-    print("all:", all_words)
+    df.insert(len(df.columns), 'account_type', label_column)
 
-    sentence_count = re.findall(r"[^.!?]+[.!?]+" , string)
-    print("sentences:", sentence_count)
-    print("Entropy:", compute_entropy(string))
-
-    unique_words = Counter(all_words)
-    total_word_len = 0
-    for word in unique_words.keys():
-        total_word_len += len(word)
-    
-    avg_word_len = total_word_len / len(unique_words.keys())
-    print("avg word len:", avg_word_len)
-
-    avg_word_per_sentence = len(all_words) / len(sentence_count)
-    print("avg words per sentence:", avg_word_per_sentence)
+    return df
