@@ -159,7 +159,7 @@ def extractTweetFeatures(tweet):
     # Finds number of special characters in a tweet
     tweet_Feature["tweet_special_characters"] = countSpecialChars(tweet)
 
-    # Finding parts of speech counts
+    # Finding parts of speech (noun, verb, adjective, adverb) counts
 
     pos_dict = countPartsOfSpeech(tweet)
 
