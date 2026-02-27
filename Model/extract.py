@@ -288,6 +288,6 @@ def cleanup(df):
     df['default_profile'] = df['default_profile'].astype(int)
     df["default_profile_image"] = df['default_profile_image'].astype(int)
     df["verified"] = df["verified"].astype(int)
-    df["account_type"] = df["account_type"].astype(int)
+    # df["account_type"] = df["account_type"].astype(int)
 
     return df
