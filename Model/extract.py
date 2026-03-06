@@ -3,6 +3,7 @@ import re
 import math
 from collections import Counter
 from Model.getfeatures import *
+from datetime import datetime
 
 '''
     File to extract features from a column of tweets
@@ -40,6 +41,7 @@ def setFeaturesdf(df):
     combined_df = appendColumns(df, tweet_df, name_df)
     cleaned_df = cleanup(combined_df)
     cleaned_df.to_csv('combined_output.csv', index=False)
+    
     return cleaned_df
 
 def addTweet(tweet, rows):
@@ -288,6 +290,11 @@ def cleanup(df):
     df['default_profile'] = df['default_profile'].astype(int)
     df["default_profile_image"] = df['default_profile_image'].astype(int)
     df["verified"] = df["verified"].astype(int)
-    # df["account_type"] = df["account_type"].astype(int)
+    df["geo_enabled"] = df["geo_enabled"].astype(int)
+
+    # Turn Human = 0, Bot = 1
+    df['account_type'] = df['account_type'].replace({'human': 1, 'bot': 0})
+    
+    df['created_at'] = df['created_at'].apply(lambda timestamp: int((datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")).timestamp()))
 
     return df
