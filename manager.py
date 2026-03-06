@@ -18,8 +18,15 @@ if __name__ == "__main__":
     # Checking each column feature, cvs is nasty
     print(twitter_dataset_csv_df.columns)
 
+    # test only fist k rows
+    # twitter_dataset_csv_df = twitter_dataset_csv_df.iloc[:10]
+
     # Appends columns of extracted tweets and names as a df of shape (N, D + E), where E is the total features extracted
     extracted_twitter_dataset_df = setFeaturesdf(twitter_dataset_csv_df)
+
+    # removing feature for now. Include maybe later
+    extracted_twitter_dataset_df.drop(['tweet_repeated_words'], axis = 1)
+
 
     # Split dataset into features and labels
     X = extracted_twitter_dataset_df.loc[:, 'created_at':"name_contains_'bot'"]
