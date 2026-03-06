@@ -5,6 +5,9 @@ import spacy
 '''
     Helper function that tokenizes tweets by white space
 '''
+
+nlp = spacy.load("en_core_web_sm")
+
 def splitTweet(tweet):
 
     split_tweet = tweet.split()
@@ -109,8 +112,6 @@ def countSpecialChars(tweet):
     i.e. number of nouns, number of verbs, number of adverbs
 '''
 def countPartsOfSpeech(tweet):
-    nlp = spacy.load("en_core_web_sm")
-
     doc = nlp(tweet)
 
     noun_list = []
