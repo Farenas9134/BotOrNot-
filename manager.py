@@ -5,32 +5,40 @@ import random
 from Model.extract import *
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import GridSearchCV
 
 '''
     Main file for loading in data, creating model, and training model
 '''
 
+
 if __name__ == "__main__":
 
     # Load in dataframe
-    twitter_dataset_csv_df = pd.read_csv(TWITTER_HUMAN_DATASET)
+    clean_dataframe = pd.read_csv("combined_output.csv")
+
+    # twitter_dataset_csv_df = pd.read_csv(TWITTER_HUMAN_DATASET)
 
     # Checking each column feature, cvs is nasty
-    print(twitter_dataset_csv_df.columns)
+    # print(twitter_dataset_csv_df.columns)
+    print(clean_dataframe.columns)
+
 
     # test only fist k rows
     # twitter_dataset_csv_df = twitter_dataset_csv_df.iloc[:10]
 
     # Appends columns of extracted tweets and names as a df of shape (N, D + E), where E is the total features extracted
-    extracted_twitter_dataset_df = setFeaturesdf(twitter_dataset_csv_df)
+    # extracted_twitter_dataset_df = setFeaturesdf(twitter_dataset_csv_df)
+
+    extracted_twitter_dataset_df = clean_dataframe
 
     # removing feature for now. Include maybe later
-    extracted_twitter_dataset_df.drop(['tweet_repeated_words'], axis = 1)
-
+    extracted_twitter_dataset_df = extracted_twitter_dataset_df.drop(['tweet_repeated_words'], axis = 1)
 
     # Split dataset into features and labels
     X = extracted_twitter_dataset_df.loc[:, 'created_at':"name_contains_'bot'"]
-    y = extracted_twitter_dataset_df.loc[:, "name_contains_'bot'":'account_type']
+    y = extracted_twitter_dataset_df.loc[:, 'account_type']
 
     # Split dataset into X_train, y_train, X_test, Y_test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -42,7 +50,20 @@ if __name__ == "__main__":
     print('Test labels shape: ', y_test.shape)
 
     # WIP KNN class stuff
-    # tweet_KNN = KNeighborsClassifier(n_neighbors=3)
+    tweet_KNN = KNeighborsClassifier()
+    param_grid = {'n_neighbors': np.arange(1, 25)}
+    knn_gscv = GridSearchCV(tweet_KNN, param_grid, cv=5)
+    knn_gscv.fit(X_train, y_train)
+    print(knn_gscv.best_params_)
+    print("Training accuracy", knn_gscv.best_score_)
+
+
+    # cv_scores = cross_val_score(tweet_KNN, X_train, y_train, cv=5)
+
     # tweet_KNN.fit(X_train, y_train)
+
+    
+
+    print("Accuracy is:", knn_gscv.score(X_test, y_test))
 
     # To be continued. Need to extract features from tweets
