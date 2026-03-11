@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 import spacy 
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 '''
     Helper function that tokenizes tweets by white space
@@ -135,18 +136,18 @@ def countPartsOfSpeech(tweet):
 
     return parts_of_speech_dict
 
-# def main():
-#     # df = pd.read_csv("Datasets/twitter-human-bots-english.csv")
-#     sample_tweet = "Loan coach at @mancity & Aspiring DJ loan loan #soccer #music @"
-#     # sample_tweet = "I'm doing this quickly"
+def getSentimentScore(tweet):
+    sid_obj = SentimentIntensityAnalyzer()
+    sentiment_dict = sid_obj.polarity_scores(tweet)
 
-#     # print(countWords(sample_tweet))
-#     # print(countHashtag(sample_tweet))
-#     # print(countMentions(sample_tweet))
-#     # print(countRepeats(sample_tweet))
-#     # print(questionCount(sample_tweet))
-#     # print(countSpecialChars(sample_tweet))
-#     # print(countPartsOfSpeech(sample_tweet))
+    # print(f"Sentiment Scores: {sentiment_dict}")
+    # print(f"Negative Sentiment: {sentiment_dict['neg']*100}%")
+    # print(f"Neutral Sentiment: {sentiment_dict['neu']*100}%")
+    # print(f"Positive Sentiment: {sentiment_dict['pos']*100}%")
 
-
-# main()
+    if sentiment_dict['compound'] >= 0.05:
+        return "Positive"
+    elif sentiment_dict['compound'] <= -0.05:
+        return "Negative"
+    else:
+        return "Neutral"
