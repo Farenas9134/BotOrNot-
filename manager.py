@@ -14,6 +14,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
 
 '''
     Main file for loading in data, creating model, and training model
@@ -36,9 +38,11 @@ if __name__ == "__main__":
     # twitter_dataset_csv_df = twitter_dataset_csv_df.iloc[:10]
 
     # Appends columns of extracted tweets and names as a df of shape (N, D + E), where E is the total features extracted
-    # extracted_twitter_dataset_df = setFeaturesdf(twitter_dataset_csv_df)
-
     extracted_twitter_dataset_df = clean_dataframe
+
+    # extracted_twitter_dataset_df = setFeaturesdf(extracted_twitter_dataset_df)
+
+    # extracted_twitter_dataset_df = extracted_twitter_dataset_df[:10]
 
     # removing feature for now. Include maybe later
     extracted_twitter_dataset_df = extracted_twitter_dataset_df.drop(['tweet_repeated_words'], axis = 1)
@@ -62,43 +66,30 @@ if __name__ == "__main__":
 
 
     # WIP PCA (reduce dimension of 40 total features)
-    scalar = StandardScaler()
-    X_scaled = scalar.fit_transform(X)
-    pca = PCA(n_components=2)
-    X_pca = pca.fit(X_scaled)
-    
-    plt.figure(figsize=(8,6))
-    plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=y, cmap='coolwarm', edgecolor='k')
-    plt.xlabel("Feature 1")
-    plt.ylabel("Feature 2")
-    plt.title("Original Data (First Two Features)")
-    plt.colorbar(label="Diagnosis")
-    plt.show()
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    plt.figure(figsize=(8,6))
-    plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y, cmap='coolwarm', edgecolor='k')
-    plt.xlabel("Principal Component 1")
-    plt.ylabel("Principal Component 2")
-    plt.title("PCA Transformed Data")
-    plt.colorbar(label="Diagnosis")
-    plt.show()
+    scalar = StandardScaler()
+    X_train_scaled = scalar.fit_transform(X_train)
+    X_test_scaled = scalar.fit_transform(X_test)
+
+
+    pca = PCA(n_components=10)
+    X_train_pca = pca.fit_transform(X_train_scaled)
+    X_test_pca = pca.fit_transform(X_test_scaled)
 
     # training / test data based off pca modification
-    X_train, X_test, y_train, y_test = train_test_split(X_pca, y, test_size=0.2, random_state=42)
-
-
 
     # WIP KNN class stuff
     tweet_KNN = KNeighborsClassifier()
     param_grid = {'n_neighbors': np.arange(1, 25)}
     knn_gscv = GridSearchCV(tweet_KNN, param_grid, cv=5)
-    knn_gscv.fit(X_train, y_train)
+    knn_gscv.fit(X_train_pca, y_train)
     print(knn_gscv.best_params_)
     print("Training accuracy", knn_gscv.best_score_)
    
-    print("Accuracy is:", knn_gscv.score(X_test, y_test))
+    print("Accuracy is:", knn_gscv.score(X_test_pca, y_test))
 
-    y_pred = knn_gscv.predict(X_test)
+    y_pred = knn_gscv.predict(X_test_pca)
 
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
