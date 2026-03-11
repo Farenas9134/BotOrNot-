@@ -70,7 +70,8 @@ def extractTweetFeatures(tweet):
                      "tweet_fraction_lowercase_words":0, "tweet_fraction_uppercase_words":0, "tweet_word_count":0,
                      "tweet_sentence_count":0, "tweet_avg_word_length":0, "tweet_avg_word_per_sentence": 0, 
                     "tweet_repeated_words":0, "tweet_question_count":0, "tweet_exclamation_count":0, "tweet_special_characters":0,
-                    "tweet_noun_counts":0, "tweet_adjective_count":0, "tweet_adverb_count":0, "tweet_verb_count":0, "tweet_pronoun_count":0}
+                    "tweet_noun_counts":0, "tweet_adjective_count":0, "tweet_adverb_count":0, "tweet_verb_count":0, "tweet_pronoun_count":0,
+                    "tweet_sentiment_score":0}
 
     # Extract tweet length
     tweet_Feature["tweet_length"] = len(tweet)
@@ -171,7 +172,8 @@ def extractTweetFeatures(tweet):
     tweet_Feature["tweet_verb_counts"] = pos_dict["VERB"]
     tweet_Feature["tweet_pronoun_counts"] = pos_dict["PRONOUN"]
 
-    
+    tweet_Feature["tweet_sentiment_score"] = getSentimentScore(tweet)
+
     return tweet_Feature
 
 def extractNameFeatures(name):
@@ -294,6 +296,7 @@ def cleanup(df):
 
     # Turn Human = 0, Bot = 1
     df['account_type'] = df['account_type'].replace({'human': 1, 'bot': 0})
+    df['tweet_sentiment_score'] = df['tweet_sentiment_score'].replace({'Positive': 0, 'Negative': 1, 'Neutral': 2})
     
     df['created_at'] = df['created_at'].apply(lambda timestamp: int((datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")).timestamp()))
 
