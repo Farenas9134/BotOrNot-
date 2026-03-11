@@ -43,6 +43,10 @@ if __name__ == "__main__":
     # removing feature for now. Include maybe later
     extracted_twitter_dataset_df = extracted_twitter_dataset_df.drop(['tweet_repeated_words'], axis = 1)
 
+    counts_human_bot = extracted_twitter_dataset_df['account_type'].value_counts()
+
+    print("Human/bot counts:", counts_human_bot)
+
     # Split dataset into features and labels
     X = extracted_twitter_dataset_df.loc[:, 'created_at':"name_contains_'bot'"]
     y = extracted_twitter_dataset_df.loc[:, 'account_type']
@@ -91,14 +95,15 @@ if __name__ == "__main__":
     knn_gscv.fit(X_train, y_train)
     print(knn_gscv.best_params_)
     print("Training accuracy", knn_gscv.best_score_)
-
-
-    # cv_scores = cross_val_score(tweet_KNN, X_train, y_train, cv=5)
-
-    # tweet_KNN.fit(X_train, y_train)
-
-    
-
+   
     print("Accuracy is:", knn_gscv.score(X_test, y_test))
 
+    y_pred = knn_gscv.predict(X_test)
+
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+
+    print("Precision is:", precision)
+    print("Recall is:", recall)
+    
     # To be continued. Need to extract features from tweets
