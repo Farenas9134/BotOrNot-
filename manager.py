@@ -1,12 +1,19 @@
 from paths import *
 import pandas as pd
 import numpy as np
-import random
 from Model.extract import *
-from sklearn.model_selection import train_test_split
+
+# graph stuff
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# scikitlearn ML models
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import GridSearchCV
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix, classification_report
 
 '''
     Main file for loading in data, creating model, and training model
@@ -41,13 +48,41 @@ if __name__ == "__main__":
     y = extracted_twitter_dataset_df.loc[:, 'account_type']
 
     # Split dataset into X_train, y_train, X_test, Y_test
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # See if shapes match expected output
-    print('Training data shape: ', X_train.shape)
-    print('Training labels shape: ', y_train.shape)
-    print('Test data shape: ', X_test.shape)
-    print('Test labels shape: ', y_test.shape)
+    # print('Training data shape: ', X_train.shape)
+    # print('Training labels shape: ', y_train.shape)
+    # print('Test data shape: ', X_test.shape)
+    # print('Test labels shape: ', y_test.shape)
+
+
+    # WIP PCA (reduce dimension of 40 total features)
+    scalar = StandardScaler()
+    X_scaled = scalar.fit_transform(X)
+    pca = PCA(n_components=2)
+    X_pca = pca.fit(X_scaled)
+    
+    plt.figure(figsize=(8,6))
+    plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=y, cmap='coolwarm', edgecolor='k')
+    plt.xlabel("Feature 1")
+    plt.ylabel("Feature 2")
+    plt.title("Original Data (First Two Features)")
+    plt.colorbar(label="Diagnosis")
+    plt.show()
+
+    plt.figure(figsize=(8,6))
+    plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y, cmap='coolwarm', edgecolor='k')
+    plt.xlabel("Principal Component 1")
+    plt.ylabel("Principal Component 2")
+    plt.title("PCA Transformed Data")
+    plt.colorbar(label="Diagnosis")
+    plt.show()
+
+    # training / test data based off pca modification
+    X_train, X_test, y_train, y_test = train_test_split(X_pca, y, test_size=0.2, random_state=42)
+
+
 
     # WIP KNN class stuff
     tweet_KNN = KNeighborsClassifier()
