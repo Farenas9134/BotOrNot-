@@ -16,6 +16,8 @@ GRAPH = PROJECT_ROOT / 'Model' / 'graph.py'
 # Datasets
 TWITTER_HUMAN_DATASET = PROJECT_ROOT / 'Datasets' / 'twitter-human-bots-english.csv'
 
+TWIBOT_DATASET = PROJECT_ROOT / 'Datasets' / 'twiBot22_v3.csv'
+
 
 # if __name__ == "__main__":
 #     print("HELLO")
