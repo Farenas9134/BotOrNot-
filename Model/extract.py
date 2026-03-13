@@ -15,32 +15,32 @@ def setFeaturesdf(df):
     '''
 
     # Extract features from each tweet
-    tweet_column = df.loc[:, 'description':'description']
+    tweet_column = df.loc[:, 'tweet_text':'tweet_text']
 
     # Extract features from screen name
-    name_column = df.loc[:, 'screen_name':'screen_name']
+    name_column = df.loc[:, 'username':'username']
 
     tweet_rows = []
     name_rows = []
 
     # Loop through each tweet and grab wanted features
-    for tweet in tweet_column['description']:
+    for tweet in tweet_column['tweet_text']:
         addTweet(tweet, tweet_rows)
     
     # Loop through each name and grab wanted features
-    for name in name_column['screen_name']:
+    for name in name_column['username']:
         addName(name, name_rows)
 
     # Convert list into dataframe & store output for debugging
     tweet_df = pd.DataFrame(tweet_rows)
-    tweet_df.to_csv('tweet_output.csv', index=False)
+    tweet_df.to_csv('twiBot_output.csv', index=False)
 
     name_df = pd.DataFrame(name_rows)
-    name_df.to_csv('name_output.csv', index=False)
+    name_df.to_csv('nametwiBot_output.csv', index=False)
 
     combined_df = appendColumns(df, tweet_df, name_df)
     cleaned_df = cleanup(combined_df)
-    cleaned_df.to_csv('combined_output.csv', index=False)
+    cleaned_df.to_csv('combined_twiBot_output.csv', index=False)
     
     return cleaned_df
 
@@ -271,8 +271,6 @@ def appendColumns(df, tweet_df, name_df):
         4. Return new dataframe
     '''
     combined_df = 0
-    tweet_index = df.columns.get_loc('description')
-    name_index = df.columns.get_loc('screen_name')
 
     combined_df = pd.concat([df, tweet_df], axis = 1)
 
@@ -282,20 +280,20 @@ def appendColumns(df, tweet_df, name_df):
 
 def cleanup(df):
     # Removes unessecary columns, moves label to end, & extra
-    df = df.drop(['description', 'screen_name', "Unnamed: 0", "location", "profile_background_image_url", "profile_image_url", "lang"], axis = 1)
+    df = df.drop(['tweet_text', "user_id", "tweet_id", "location", "profile_image_url", "pinned_tweet_id", "url", "split", "username"], axis = 1)
 
     # move location of label to be at the end
-    label_column = df.pop('account_type')
-    df.insert(len(df.columns), 'account_type', label_column)
+    label_column = df.pop('label')
+    df.insert(len(df.columns), 'label', label_column)
 
     # Turn TRUE/FALSE into binary value (0/1)
-    df['default_profile'] = df['default_profile'].astype(int)
-    df["default_profile_image"] = df['default_profile_image'].astype(int)
+    # df['default_profile'] = df['default_profile'].astype(int)
+    # df["default_profile_image"] = df['default_profile_image'].astype(int)
     df["verified"] = df["verified"].astype(int)
-    df["geo_enabled"] = df["geo_enabled"].astype(int)
+    # df["geo_enabled"] = df["geo_enabled"].astype(int)
 
     # Turn Human = 0, Bot = 1
-    df['account_type'] = df['account_type'].replace({'human': 1, 'bot': 0})
+    df['label'] = df['label'].replace({'human': 1, 'bot': 0})
     df['tweet_sentiment_score'] = df['tweet_sentiment_score'].replace({'Positive': 0, 'Negative': 1, 'Neutral': 2})
     
     df['created_at'] = df['created_at'].apply(lambda timestamp: int((datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")).timestamp()))

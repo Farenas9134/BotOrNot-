@@ -25,22 +25,22 @@ from sklearn.metrics import recall_score
 if __name__ == "__main__":
 
     # Load in dataframe
-    clean_dataframe = pd.read_csv("combined_output.csv")
+    # clean_dataframe = pd.read_csv("combined_output.csv")
 
-    # twitter_dataset_csv_df = pd.read_csv(TWITTER_HUMAN_DATASET)
+    twiBot_dataset_csv_df = pd.read_csv(TWIBOT_DATASET)
 
     # Checking each column feature, cvs is nasty
     # print(twitter_dataset_csv_df.columns)
-    print(clean_dataframe.columns)
+    # print(clean_dataframe.columns)
 
 
     # test only fist k rows
-    # twitter_dataset_csv_df = twitter_dataset_csv_df.iloc[:10]
+    twiBot_dataset_csv_df = twiBot_dataset_csv_df.iloc[:10]
 
     # Appends columns of extracted tweets and names as a df of shape (N, D + E), where E is the total features extracted
-    extracted_twitter_dataset_df = clean_dataframe
+    # extracted_twitter_dataset_df = clean_dataframe
 
-    # extracted_twitter_dataset_df = setFeaturesdf(extracted_twitter_dataset_df)
+    extracted_twitter_dataset_df = setFeaturesdf(twiBot_dataset_csv_df)
 
     # extracted_twitter_dataset_df = extracted_twitter_dataset_df[:10]
 
@@ -52,49 +52,49 @@ if __name__ == "__main__":
     print("Human/bot counts:", counts_human_bot)
 
     # Split dataset into features and labels
-    X = extracted_twitter_dataset_df.loc[:, 'created_at':"name_contains_'bot'"]
-    y = extracted_twitter_dataset_df.loc[:, 'account_type']
+    # X = extracted_twitter_dataset_df.loc[:, 'created_at':"name_contains_'bot'"]
+    # y = extracted_twitter_dataset_df.loc[:, 'account_type']
 
-    # Split dataset into X_train, y_train, X_test, Y_test
+    # # Split dataset into X_train, y_train, X_test, Y_test
+    # # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # # See if shapes match expected output
+    # # print('Training data shape: ', X_train.shape)
+    # # print('Training labels shape: ', y_train.shape)
+    # # print('Test data shape: ', X_test.shape)
+    # # print('Test labels shape: ', y_test.shape)
+
+
+    # # WIP PCA (reduce dimension of 40 total features)
     # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # See if shapes match expected output
-    # print('Training data shape: ', X_train.shape)
-    # print('Training labels shape: ', y_train.shape)
-    # print('Test data shape: ', X_test.shape)
-    # print('Test labels shape: ', y_test.shape)
+    # scalar = StandardScaler()
+    # X_train_scaled = scalar.fit_transform(X_train)
+    # X_test_scaled = scalar.fit_transform(X_test)
 
 
-    # WIP PCA (reduce dimension of 40 total features)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # pca = PCA(n_components=10)
+    # X_train_pca = pca.fit_transform(X_train_scaled)
+    # X_test_pca = pca.fit_transform(X_test_scaled)
 
-    scalar = StandardScaler()
-    X_train_scaled = scalar.fit_transform(X_train)
-    X_test_scaled = scalar.fit_transform(X_test)
+    # # training / test data based off pca modification
 
-
-    pca = PCA(n_components=10)
-    X_train_pca = pca.fit_transform(X_train_scaled)
-    X_test_pca = pca.fit_transform(X_test_scaled)
-
-    # training / test data based off pca modification
-
-    # WIP KNN class stuff
-    tweet_KNN = KNeighborsClassifier()
-    param_grid = {'n_neighbors': np.arange(1, 25)}
-    knn_gscv = GridSearchCV(tweet_KNN, param_grid, cv=5)
-    knn_gscv.fit(X_train_pca, y_train)
-    print(knn_gscv.best_params_)
-    print("Training accuracy", knn_gscv.best_score_)
+    # # WIP KNN class stuff
+    # tweet_KNN = KNeighborsClassifier()
+    # param_grid = {'n_neighbors': np.arange(1, 25)}
+    # knn_gscv = GridSearchCV(tweet_KNN, param_grid, cv=5)
+    # knn_gscv.fit(X_train_pca, y_train)
+    # print(knn_gscv.best_params_)
+    # print("Training accuracy", knn_gscv.best_score_)
    
-    print("Accuracy is:", knn_gscv.score(X_test_pca, y_test))
+    # print("Accuracy is:", knn_gscv.score(X_test_pca, y_test))
 
-    y_pred = knn_gscv.predict(X_test_pca)
+    # y_pred = knn_gscv.predict(X_test_pca)
 
-    precision = precision_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
+    # precision = precision_score(y_test, y_pred)
+    # recall = recall_score(y_test, y_pred)
 
-    print("Precision is:", precision)
-    print("Recall is:", recall)
+    # print("Precision is:", precision)
+    # print("Recall is:", recall)
     
     # To be continued. Need to extract features from tweets
