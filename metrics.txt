@@ -1,0 +1,234 @@
+Our dataset:
+Human: 818,613
+Bot:   115,259
+
+Issues? 7:1 ratio, any model will have difficulty learning patterns when guessing human will result in ~85% acc
+    - Prevelant in our KNN testing with a resampling with a ration of 7:1 just scaled down
+        - It got a 88% but recall was almost a perfect 1, meaning it guess human every time
+
+Solution: Undersampling the majority class to make a 2:1 ratio
+
+Other constraints:
+    Storage: TwiBot22 dataset has a sum total of over 100gb
+        We only got unique users and one tweet per user, still over 1 billion lines
+        Bot to Human ratio not great given bots might have had more tweets
+            - We also lack some strong features gathered from multiple tweets attached to one user
+
+            - LOWKEY we could've chosen a small subset of human and bot users and gathered a set limit of tweets for each user
+                this would have solved the one tweet per user issue, but we could just say we wanted to recreate the other dataset we had
+                that had one tweet per user
+
+    Time: Each run through a model took about ~1 hour on average
+
+Scores:
+    MCC: a measure of classifier performace
+        -1 to 1
+        closer to 1 means a good classifier
+        0 means no better than guessing
+        -1 poor performance
+
+        >0.3 is considered moderate
+        >0.5 is considered strong
+
+Balanced accuracy averages the recall of each class equally regardless of size:
+balanced accuracy = (bot recall + human recall) / 2
+
+
+KNN resample of 50k we get:
+
+    Training accuracy: 0.876540011501462
+    Test accuracy: 0.87884
+    Precision: 0.880233866430925
+    Recall: 0.9977908353830737
+    
+    Pretty bad because the precision and recall is just telling us
+    that it is predicting human every time and it still gets a high acc
+
+RF resample of 150k 
+    Quick scan importance:
+        followers_count                   0.092514 
+        following_count                   0.065287
+        tweet_count                       0.065030
+        tweet_freq                        0.062955
+        reputation                        0.056230
+        account_age_days                  0.052214
+        tweet_entropy                     0.042627
+        tweet_avg_word_length             0.040370
+        tweet_length                      0.039491
+        listed_count                      0.039454
+        name_entropy                      0.038209
+        followers_friends_ratio           0.037084
+        tweet_special_characters          0.029339
+        tweet_word_count                  0.029080
+        tweet_avg_word_per_sentence       0.026979
+        tweet_noun_counts                 0.024883
+        name_length                       0.024164
+        tweet_digits_count                0.020620
+        tweet_fraction_uppercase_words    0.020465
+        tweet_fraction_lowercase_words    0.020311
+        tweet_verb_counts                 0.017653
+        tweet_unique_mention_count        0.014818
+        tweet_pronoun_counts              0.014745
+        tweet_adjective_counts            0.014472
+        name_digits_count                 0.013312
+        tweet_sentence_count              0.013065
+        tweet_adverb_counts               0.011005
+        name_mean_bigram_freq             0.010636
+        tweet_sentiment_score             0.009212
+        tweet_mean_bigram_freq            0.008990
+        tweet_hashtag_count               0.008335
+        tweet_'bot'_count                 0.008178
+        tweet_exclamation_count           0.006656
+        tweet_unique_url_count            0.005497
+        tweet_url_count                   0.005447
+        tweet_question_count              0.004638
+        verified                          0.003423
+        name_contains_'bot'               0.002053
+        protected                         0.000558
+    
+    After adding in tweet hour of day, day of week, and account age:
+        followers_count                   0.087109
+        following_count                   0.059927
+        tweet_count                       0.059532
+        tweet_freq                        0.057435
+        reputation                        0.052482
+        account_age_at_tweet              0.044658
+        account_age_days                  0.042564
+        tweet_entropy                     0.037737
+        tweet_avg_word_length             0.036370
+        tweet_length                      0.035688
+        listed_count                      0.034825
+        name_entropy                      0.034289
+        followers_friends_ratio           0.033587
+        tweet_hour_of_day                 0.029094
+        tweet_special_characters          0.026749
+        tweet_word_count                  0.026637
+        tweet_avg_word_per_sentence       0.024770
+        tweet_noun_counts                 0.022559
+        name_length                       0.021589
+        tweet_day_of_week                 0.018990
+        tweet_digits_count                0.018703
+        tweet_fraction_lowercase_words    0.018688
+        tweet_fraction_uppercase_words    0.018514
+        tweet_verb_counts                 0.015985
+        tweet_unique_mention_count        0.013576
+        tweet_pronoun_counts              0.013383
+        tweet_adjective_counts            0.012972
+        tweet_sentence_count              0.012015
+        name_digits_count                 0.011890
+        tweet_adverb_counts               0.009864
+        name_mean_bigram_freq             0.009576
+        tweet_mean_bigram_freq            0.008268
+        tweet_sentiment_score             0.008124
+        tweet_'bot'_count                 0.007985
+        tweet_hashtag_count               0.007704
+        tweet_exclamation_count           0.005899
+        tweet_url_count                   0.005176
+        tweet_unique_url_count            0.005131
+        tweet_question_count              0.004244
+        verified                          0.003261
+        name_contains_'bot'               0.001981
+        protected                         0.000471
+
+RF metrics with no dropping features:
+              precision    recall  f1-score   support
+
+         bot       0.36      0.63      0.45     23113
+       human       0.94      0.84      0.89    163662
+
+    accuracy                           0.81    186775
+   macro avg       0.65      0.73      0.67    186775
+weighted avg       0.87      0.81      0.83    186775
+
+Balanced accuracy: 0.7347821098436388
+MCC: 0.37347445374502763
+
+
+RF resample of 150k with just the 15 features as the scores drop below ~0.02 after that
+After undersampling: {1: 184292, 0: 92146}
+              precision    recall  f1-score   support
+
+         bot       0.36      0.63      0.45     23113
+       human       0.94      0.84      0.89    163662
+
+    accuracy                           0.81    186775
+   macro avg       0.65      0.73      0.67    186775
+weighted avg       0.87      0.81      0.83    186775
+
+Balanced accuracy: 0.733357659110742
+MCC: 0.3723817336680567
+
+SMOTE stuff with dropping noisey features:
+    Before SMOTE: label
+    1    131499
+    0     18501
+    Name: count, dtype: int64
+    After SMOTE: label
+    0    131499
+    1    131499
+    Name: count, dtype: int64
+                    precision    recall  f1-score   support
+                bot       0.40      0.24      0.30     23113
+            human       0.90      0.95      0.92    163662
+            accuracy                           0.86    186775
+        macro avg       0.65      0.59      0.61    186775
+        weighted avg       0.84      0.86      0.85    186775
+        Balanced accuracy: 0.594803901000327
+        MCC: 0.23596213305379984
+
+
+RF testing thresholds:
+--- Default threshold (0.5) ---
+              precision    recall  f1-score   support
+         bot       0.29      0.80      0.43     23113
+       human       0.96      0.72      0.82    163662
+    accuracy                           0.73    186775
+   macro avg       0.63      0.76      0.63    186775
+weighted avg       0.88      0.73      0.78    186775
+Balanced accuracy: 0.7626546981946883
+MCC: 0.36409416557261437
+--- Threshold: 0.3 ---
+              precision    recall  f1-score   support
+         bot       0.02      0.08      0.03     23113
+       human       0.79      0.48      0.59    163662
+    accuracy                           0.43    186775
+   macro avg       0.40      0.28      0.31    186775
+weighted avg       0.69      0.43      0.52    186775
+Balanced accuracy: 0.27770418121738094
+MCC: -0.29333527486780353
+--- Threshold: 0.4 ---
+              precision    recall  f1-score   support
+         bot       0.03      0.13      0.05     23113
+       human       0.75      0.36      0.49    163662
+    accuracy                           0.34    186775
+   macro avg       0.39      0.25      0.27    186775
+weighted avg       0.66      0.34      0.43    186775
+Balanced accuracy: 0.24692820124251097
+MCC: -0.33696372387586493
+--- Threshold: 0.5 ---
+              precision    recall  f1-score   support
+         bot       0.04      0.20      0.06     23113
+       human       0.71      0.28      0.40    163662
+    accuracy                           0.27    186775
+   macro avg       0.37      0.24      0.23    186775
+weighted avg       0.63      0.27      0.36    186775
+Balanced accuracy: 0.23734530180531166
+MCC: -0.36409416557261437
+--- Threshold: 0.6 ---
+              precision    recall  f1-score   support
+         bot       0.05      0.30      0.09     23113
+       human       0.67      0.20      0.31    163662
+    accuracy                           0.21    186775
+   macro avg       0.36      0.25      0.20    186775
+weighted avg       0.59      0.21      0.28    186775
+Balanced accuracy: 0.24981725900001805
+MCC: -0.3731791637181022
+--- Threshold: 0.7 ---
+              precision    recall  f1-score   support
+         bot       0.07      0.47      0.12     23113
+       human       0.62      0.12      0.21    163662
+    accuracy                           0.17    186775
+   macro avg       0.35      0.30      0.16    186775
+weighted avg       0.56      0.17      0.20    186775
+Balanced accuracy: 0.296522258196567
+MCC: -0.35288120453659744

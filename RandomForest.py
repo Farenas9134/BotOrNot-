@@ -95,11 +95,11 @@ def compute_optimized_tree_count(X, y):
     print(f"Optimal number of trees based on OOB error: {best_trees}")
 
     # Plot results to find where error stabilizes
-    # plt.plot(trees_range, oob_errors)
-    # plt.xlabel("Number of Trees (n_estimators)")
-    # plt.ylabel("OOB Error Rate")
-    # plt.title("OOB Error Rate vs. Number of Trees")
-    # plt.show()
+    plt.plot(trees_range, oob_errors)
+    plt.xlabel("Number of Trees (n_estimators)")
+    plt.ylabel("OOB Error Rate")
+    plt.title("OOB Error Rate vs. Number of Trees")
+    plt.show()
 
     return best_trees
 
