@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # removing feature for now. Include maybe later
     extracted_twitter_dataset_df = extracted_twitter_dataset_df.drop(['tweet_repeated_words'], axis = 1)
 
-    counts_human_bot = extracted_twitter_dataset_df['account_type'].value_counts()
+    counts_human_bot = extracted_twitter_dataset_df['label'].value_counts()
 
     print("Human/bot counts:", counts_human_bot)
 

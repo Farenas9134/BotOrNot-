@@ -280,7 +280,7 @@ def appendColumns(df, tweet_df, name_df):
 
 def cleanup(df):
     # Removes unessecary columns, moves label to end, & extra
-    df = df.drop(['tweet_text', "user_id", "tweet_id", "location", "profile_image_url", "pinned_tweet_id", "url", "split", "username"], axis = 1)
+    df = df.drop(['tweet_text', "user_id", "tweet_id", "location", "profile_image_url", "pinned_tweet_id", "url", "split", "username", "description", "name"], axis = 1)
 
     # move location of label to be at the end
     label_column = df.pop('label')
@@ -290,12 +290,14 @@ def cleanup(df):
     # df['default_profile'] = df['default_profile'].astype(int)
     # df["default_profile_image"] = df['default_profile_image'].astype(int)
     df["verified"] = df["verified"].astype(int)
+    df["protected"] = df["protected"].astype(int)
+
     # df["geo_enabled"] = df["geo_enabled"].astype(int)
 
     # Turn Human = 0, Bot = 1
     df['label'] = df['label'].replace({'human': 1, 'bot': 0})
     df['tweet_sentiment_score'] = df['tweet_sentiment_score'].replace({'Positive': 0, 'Negative': 1, 'Neutral': 2})
     
-    df['created_at'] = df['created_at'].apply(lambda timestamp: int((datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")).timestamp()))
+    # df['created_at'] = df['created_at'].apply(lambda timestamp: int((datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")).timestamp()))
 
     return df
