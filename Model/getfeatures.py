@@ -8,6 +8,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 '''
 
 nlp = spacy.load("en_core_web_sm")
+sid_obj = SentimentIntensityAnalyzer()
 
 def splitTweet(tweet):
 
@@ -137,7 +138,6 @@ def countPartsOfSpeech(tweet):
     return parts_of_speech_dict
 
 def getSentimentScore(tweet):
-    sid_obj = SentimentIntensityAnalyzer()
     sentiment_dict = sid_obj.polarity_scores(tweet)
 
     # print(f"Sentiment Scores: {sentiment_dict}")

@@ -10,57 +10,70 @@ from datetime import datetime
 '''
 
 def setFeaturesdf(df):
-    '''  
-        Creates a pandas data frame of extracted features from tweets & names
     '''
+    Creates a pandas dataframe of extracted features from tweets & names.
+    Uses nlp.pipe() for batched spaCy processing for significant speedup.
+    '''
+    df = df.copy()
+    df['tweet_text'] = df['tweet_text'].fillna("").astype(str)
+    df['username'] = df['username'].fillna("").astype(str)
 
-    # Extract features from each tweet
-    tweet_column = df.loc[:, 'tweet_text':'tweet_text']
+    tweets = df['tweet_text'].tolist()
+    names = df['username'].tolist()
 
-    # Extract features from screen name
-    name_column = df.loc[:, 'username':'username']
+    # --- Batch POS tagging with nlp.pipe() ---
+    pos_results = []
+    for doc in nlp.pipe(tweets, batch_size=512, n_process=1):
+        counts = {"NOUN": 0, "ADJECTIVE": 0, "ADVERB": 0, "VERB": 0, "PRONOUN": 0}
+        for token in doc:
+            if token.pos_ == "NOUN":    counts["NOUN"] += 1
+            elif token.pos_ == "ADJ":   counts["ADJECTIVE"] += 1
+            elif token.pos_ == "VERB":  counts["VERB"] += 1
+            elif token.pos_ == "PRON":  counts["PRONOUN"] += 1
+            elif token.pos_ == "ADV":   counts["ADVERB"] += 1
+        pos_results.append(counts)
 
+    # --- Extract all other tweet & name features ---
     tweet_rows = []
     name_rows = []
 
-    # Loop through each tweet and grab wanted features
-    for tweet in tweet_column['tweet_text']:
-        addTweet(tweet, tweet_rows)
-    
-    # Loop through each name and grab wanted features
-    for name in name_column['username']:
-        addName(name, name_rows)
+    for tweet, pos in zip(tweets, pos_results):
+        row = extractTweetFeatures(tweet, pos)
+        tweet_rows.append(row)
 
-    # Convert list into dataframe & store output for debugging
+    for name in names:
+        name_rows.append(extractNameFeatures(name))
+
+    # --- Assemble final dataframe ---
     tweet_df = pd.DataFrame(tweet_rows)
-    tweet_df.to_csv('twiBot_output.csv', index=False)
-
     name_df = pd.DataFrame(name_rows)
+
+    tweet_df.to_csv('twiBot_tweet_output.csv', index=False)
     name_df.to_csv('nametwiBot_output.csv', index=False)
 
-    combined_df = appendColumns(df, tweet_df, name_df)
+    combined_df = pd.concat([df, tweet_df, name_df], axis=1)
     cleaned_df = cleanup(combined_df)
     cleaned_df.to_csv('combined_twiBot_output.csv', index=False)
-    
+
     return cleaned_df
 
-def addTweet(tweet, rows):
-    '''
-        Adds a tweet into a list of tweets for easy access to extract features
-    '''
-    row = extractTweetFeatures(tweet)
-    rows.append(row)
-    return
+# def addTweet(tweet, rows):
+#     '''
+#         Adds a tweet into a list of tweets for easy access to extract features
+#     '''
+#     row = extractTweetFeatures(tweet)
+#     rows.append(row)
+#     return
 
-def addName(name, rows):
-    '''
-        Adds a name into a list of names for easy access to extract features
-    '''
-    row = extractNameFeatures(name)
-    rows.append(row)
-    return
+# def addName(name, rows):
+#     '''
+#         Adds a name into a list of names for easy access to extract features
+#     '''
+#     row = extractNameFeatures(name)
+#     rows.append(row)
+#     return
 
-def extractTweetFeatures(tweet):
+def extractTweetFeatures(tweet, pos_dict):
     '''
         Extracts the following features: 
     '''
@@ -70,7 +83,7 @@ def extractTweetFeatures(tweet):
                      "tweet_fraction_lowercase_words":0, "tweet_fraction_uppercase_words":0, "tweet_word_count":0,
                      "tweet_sentence_count":0, "tweet_avg_word_length":0, "tweet_avg_word_per_sentence": 0, 
                     "tweet_repeated_words":0, "tweet_question_count":0, "tweet_exclamation_count":0, "tweet_special_characters":0,
-                    "tweet_noun_counts":0, "tweet_adjective_count":0, "tweet_adverb_count":0, "tweet_verb_count":0, "tweet_pronoun_count":0,
+                    "tweet_noun_counts":0, "tweet_adjective_counts":0, "tweet_adverb_counts":0, "tweet_verb_counts":0, "tweet_pronoun_counts":0,
                     "tweet_sentiment_score":0}
 
     # Extract tweet length
@@ -163,8 +176,6 @@ def extractTweetFeatures(tweet):
     tweet_Feature["tweet_special_characters"] = countSpecialChars(tweet)
 
     # Finding parts of speech (noun, verb, adjective, adverb) counts
-
-    pos_dict = countPartsOfSpeech(tweet)
 
     tweet_Feature["tweet_noun_counts"] = pos_dict["NOUN"]
     tweet_Feature["tweet_adjective_counts"] = pos_dict["ADJECTIVE"]

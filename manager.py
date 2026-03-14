@@ -25,9 +25,9 @@ from sklearn.metrics import recall_score
 if __name__ == "__main__":
 
     # Load in dataframe
-    # clean_dataframe = pd.read_csv("combined_output.csv")
+    clean_dataframe = pd.read_csv("combined_twiBot_output.csv")
 
-    twiBot_dataset_csv_df = pd.read_csv(TWIBOT_DATASET)
+    # twiBot_dataset_csv_df = pd.read_csv(TWIBOT_DATASET)
 
     # Checking each column feature, cvs is nasty
     # print(twitter_dataset_csv_df.columns)
@@ -35,19 +35,18 @@ if __name__ == "__main__":
 
 
     # test only fist k rows
-    twiBot_dataset_csv_df = twiBot_dataset_csv_df.iloc[:10]
+    # twiBot_dataset_csv_df = twiBot_dataset_csv_df.iloc[:10]
 
     # Appends columns of extracted tweets and names as a df of shape (N, D + E), where E is the total features extracted
-    # extracted_twitter_dataset_df = clean_dataframe
-
-    extracted_twitter_dataset_df = setFeaturesdf(twiBot_dataset_csv_df)
+    # extracted_twitter_dataset_df = setFeaturesdf(twiBot_dataset_csv_df)
 
     # extracted_twitter_dataset_df = extracted_twitter_dataset_df[:10]
 
     # removing feature for now. Include maybe later
-    extracted_twitter_dataset_df = extracted_twitter_dataset_df.drop(['tweet_repeated_words'], axis = 1)
+    extracted_twitter_dataset_df = clean_dataframe.drop(['tweet_repeated_words'], axis = 1)
 
-    counts_human_bot = extracted_twitter_dataset_df['label'].value_counts()
+    counts_human_bot = clean_dataframe['label'].value_counts()
+    counts_human_bot.index = counts_human_bot.index.map({1: 'human', 0: 'bot'})
 
     print("Human/bot counts:", counts_human_bot)
 
@@ -55,17 +54,17 @@ if __name__ == "__main__":
     # X = extracted_twitter_dataset_df.loc[:, 'created_at':"name_contains_'bot'"]
     # y = extracted_twitter_dataset_df.loc[:, 'account_type']
 
-    # # Split dataset into X_train, y_train, X_test, Y_test
-    # # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Split dataset into X_train, y_train, X_test, Y_test
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # # See if shapes match expected output
-    # # print('Training data shape: ', X_train.shape)
-    # # print('Training labels shape: ', y_train.shape)
-    # # print('Test data shape: ', X_test.shape)
-    # # print('Test labels shape: ', y_test.shape)
+    # See if shapes match expected output
+    # print('Training data shape: ', X_train.shape)
+    # print('Training labels shape: ', y_train.shape)
+    # print('Test data shape: ', X_test.shape)
+    # print('Test labels shape: ', y_test.shape)
 
 
-    # # WIP PCA (reduce dimension of 40 total features)
+    # WIP PCA (reduce dimension of 40 total features)
     # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # scalar = StandardScaler()
@@ -97,4 +96,4 @@ if __name__ == "__main__":
     # print("Precision is:", precision)
     # print("Recall is:", recall)
     
-    # To be continued. Need to extract features from tweets
+    # # To be continued. Need to extract features from tweets
