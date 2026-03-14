@@ -48,8 +48,8 @@ def setFeaturesdf(df):
     tweet_df = pd.DataFrame(tweet_rows)
     name_df = pd.DataFrame(name_rows)
 
-    tweet_df.to_csv('twiBot_tweet_output.csv', index=False)
-    name_df.to_csv('nametwiBot_output.csv', index=False)
+    # tweet_df.to_csv('twiBot_tweet_output.csv', index=False)
+    # name_df.to_csv('nametwiBot_output.csv', index=False)
 
     combined_df = pd.concat([df, tweet_df, name_df], axis=1)
     cleaned_df = cleanup(combined_df)
