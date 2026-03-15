@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 from Model.extract import *
 
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import classification_report, balanced_accuracy_score, matthews_corrcoef
+from sklearn.metrics import classification_report, balanced_accuracy_score, matthews_corrcoef, precision_score, recall_score
 from sklearn.utils import resample
+from sklearn.neighbors import KNeighborsClassifier
 from imblearn.under_sampling import RandomUnderSampler
 
 if __name__ == "__main__":
@@ -120,3 +121,29 @@ if __name__ == "__main__":
     ax.set_xticklabels(threshold_values)
     ax.legend(loc="upper left")
     plt.show()
+
+    # rus = RandomUnderSampler(sampling_strategy=0.5, random_state=42)
+    # X_resampled, y_resampled = rus.fit_resample(X_train_reduced, y_train)
+    # X_test_resampled, y_test_resampled = rus.fit_resample(X_test_reduced, y_test)
+
+    # # KNN with grid search
+    # tweet_KNN = KNeighborsClassifier(algorithm='kd_tree')
+    # param_grid = {'n_neighbors': np.arange(1, 25)}
+    # knn_gscv = GridSearchCV(tweet_KNN, param_grid, cv=3, n_jobs=-1)
+
+    # # Actual training of knn
+    # # knn_gscv.fit(X_train_scaled, y_train)
+
+    # # SMALL SAMPLE TO AVOID RUNNING HUGE DATASET
+    # X_train_sample, y_train_sample = resample(X_resampled, y_resampled, n_samples=50000, random_state=42)
+    # X_test_sample, y_test_sample = resample(X_test_resampled, y_test_resampled, n_samples=50000, random_state=42)
+
+    # knn_gscv.fit(X_train_sample, y_train_sample)
+
+    # print(knn_gscv.best_params_)
+    # print("Training accuracy:", knn_gscv.best_score_)
+    # print("Test accuracy:", knn_gscv.score(X_test_sample, y_test_sample))
+
+    # y_pred = knn_gscv.predict(X_test_sample)
+    # print("Precision:", precision_score(y_test_sample, y_pred))
+    # print("Recall:", recall_score(y_test_sample, y_pred))
