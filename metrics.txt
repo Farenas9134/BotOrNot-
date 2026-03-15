@@ -40,6 +40,21 @@ KNN resample of 50k we get:
     Test accuracy: 0.87884
     Precision: 0.880233866430925
     Recall: 0.9977908353830737
+
+    NEW UPDATED BLAH
+    Training accuracy: 0.8765400103014379
+    Test accuracy: 0.87862
+    Precision: 0.880130999979908
+    Recall: 0.9976541860253256
+
+    2 1 ratio
+    Training accuracy: 0.6933399637539471
+    Test accuracy: 0.68856
+    Precision: 0.7177104208416833
+    Recall: 0.8694240456393761
+
+    reduced dimensions
+    
     
     Pretty bad because the precision and recall is just telling us
     that it is predicting human every time and it still gets a high acc
@@ -232,3 +247,22 @@ MCC: -0.3731791637181022
 weighted avg       0.56      0.17      0.20    186775
 Balanced accuracy: 0.296522258196567
 MCC: -0.35288120453659744
+
+
+
+Total Features:
+    'protected', 'verified', 'followers_count', 
+    'following_count', 'tweet_count', 'listed_count', 
+    'reputation', 'followers_friends_ratio', 'tweet_freq', 
+    'tweet_length', 'tweet_digits_count', 'tweet_mean_bigram_freq', 
+    'tweet_entropy', "tweet_'bot'_count", 'tweet_hashtag_count', 
+    'tweet_url_count', 'tweet_unique_url_count', 'tweet_unique_mention_count', 
+    'tweet_fraction_lowercase_words', 'tweet_fraction_uppercase_words', 
+    'tweet_word_count', 'tweet_sentence_count', 'tweet_avg_word_length', 
+    'tweet_avg_word_per_sentence', 'tweet_question_count', 
+    'tweet_exclamation_count', 'tweet_special_characters', 
+    'tweet_noun_counts', 'tweet_adjective_counts', 'tweet_adverb_counts', 
+    'tweet_verb_counts', 'tweet_pronoun_counts', 'tweet_sentiment_score', 
+    'name_length', 'name_digits_count', 'name_mean_bigram_freq', 'name_entropy', 
+    "name_contains_'bot'", 'tweet_hour_of_day', 'tweet_day_of_week', 
+    'account_age_at_tweet', 'label'

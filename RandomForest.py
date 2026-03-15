@@ -1,25 +1,12 @@
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import mean_absolute_error, f1_score
-from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import StratifiedKFold
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
-import json
-from datetime import datetime
 import pandas as pd
+import sys
 
 import numpy as np
-
-from sklearn.metrics import (
-    confusion_matrix, classification_report,
-    roc_auc_score, average_precision_score,
-    precision_recall_curve, roc_curve,
-    accuracy_score, balanced_accuracy_score,
-    precision_score, recall_score, f1_score,
-    matthews_corrcoef, brier_score_loss, log_loss
-)
-from sklearn.calibration import calibration_curve
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
 from paths import *
@@ -38,8 +25,7 @@ from paths import *
     
     OUTPUT: k features producing lowest MAE (mean absolute error)
 
-    NOT DONE HERE, BUT WHAT WE DO WITH OUTPUT
-    3. Feed features into SVM-RBF
+    3. Feed features into 
 '''
 
 def randomForest(X, y):
@@ -174,11 +160,6 @@ def get_top_k_features(X, y, tree_count, k):
 
     print(top_features_dict)
 
-    import sys
-
-    # Store original standard output
-    original_stdout = sys.stdout
-
     with open('ALL_FEATURES_RANKED.txt', 'w') as f:
         # Redirect standard output to the file
         sys.stdout = f
@@ -188,17 +169,3 @@ def get_top_k_features(X, y, tree_count, k):
     top_k_feature_names = X.columns[top_k_indices]
 
     return top_k_feature_names
-
-if __name__ == "__main__":
-    # PUT IN PATH TO CSV FILE
-    df = pd.read_csv("")
-
-    # Set x and y
-    '''
-        Set x and y
-        Output = optimized features, and final rf
-
-        Dump that rf for future query and save the bundle path
-
-        grab k-best features and pass that into new model
-    '''
