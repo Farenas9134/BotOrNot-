@@ -14,8 +14,12 @@ from imblearn.under_sampling import RandomUnderSampler
 
 if __name__ == "__main__":
 
+    ''' 
+        ------------------------- Load in extracted dataset ---------------------
+    '''
+
     # Load in dataframe
-    clean_dataframe = pd.read_csv("combined_twiBot_output.csv")
+    clean_dataframe = pd.read_csv(COMBINED_TWIBOT_DATASET)
 
     # Extract temporal features before dropping timestamp columns
     clean_dataframe['tweet_created_at'] = pd.to_datetime(clean_dataframe['tweet_created_at'], utc=True)
@@ -75,9 +79,11 @@ if __name__ == "__main__":
     rus = RandomUnderSampler(sampling_strategy=0.5, random_state=42)
     X_resampled, y_resampled = rus.fit_resample(X_train_reduced, y_train)
 
-    print("After undersampling:", pd.Series(y_resampled).value_counts().to_dict())
+    ''' 
+        ------------------------- Model training / testing below ---------------------
+    '''
 
-    # Train Random Forest
+    # RANDOM FOREST MODEL TRAINING AND TESTING
     final_rf = RandomForestClassifier(
         n_estimators=150,
         max_depth=20,
@@ -100,10 +106,10 @@ if __name__ == "__main__":
         mcc_score_list.append(matthews_corrcoef(y_test, y_pred))
     
     # Evaluate
-    # y_pred = final_rf.predict(X_test_reduced)
-    # print(classification_report(y_test, y_pred, target_names=['bot', 'human']))
-    # print("Balanced accuracy:", balanced_accuracy_score(y_test, y_pred))
-    # print("MCC:", matthews_corrcoef(y_test, y_pred))
+    y_pred = final_rf.predict(X_test_reduced)
+    print(classification_report(y_test, y_pred, target_names=['bot', 'human']))
+    print("Balanced accuracy:", balanced_accuracy_score(y_test, y_pred))
+    print("MCC:", matthews_corrcoef(y_test, y_pred))
 
     x = np.arange(len(threshold_values))
     width = 0.35
@@ -121,29 +127,33 @@ if __name__ == "__main__":
     ax.set_xticklabels(threshold_values)
     ax.legend(loc="upper left")
     plt.show()
+    
 
-    # rus = RandomUnderSampler(sampling_strategy=0.5, random_state=42)
-    # X_resampled, y_resampled = rus.fit_resample(X_train_reduced, y_train)
-    # X_test_resampled, y_test_resampled = rus.fit_resample(X_test_reduced, y_test)
+    # KNN MODEL TRAINING AND TESTING
 
-    # # KNN with grid search
-    # tweet_KNN = KNeighborsClassifier(algorithm='kd_tree')
-    # param_grid = {'n_neighbors': np.arange(1, 25)}
-    # knn_gscv = GridSearchCV(tweet_KNN, param_grid, cv=3, n_jobs=-1)
+    # Undersample majority class (humans)
+    rus = RandomUnderSampler(sampling_strategy=0.5, random_state=42)
+    X_resampled, y_resampled = rus.fit_resample(X_train_reduced, y_train)
+    X_test_resampled, y_test_resampled = rus.fit_resample(X_test_reduced, y_test)
 
-    # # Actual training of knn
-    # # knn_gscv.fit(X_train_scaled, y_train)
+    # KNN with grid search
+    tweet_KNN = KNeighborsClassifier(algorithm='kd_tree')
+    param_grid = {'n_neighbors': np.arange(1, 25)}
+    knn_gscv = GridSearchCV(tweet_KNN, param_grid, cv=3, n_jobs=-1)
 
-    # # SMALL SAMPLE TO AVOID RUNNING HUGE DATASET
-    # X_train_sample, y_train_sample = resample(X_resampled, y_resampled, n_samples=50000, random_state=42)
-    # X_test_sample, y_test_sample = resample(X_test_resampled, y_test_resampled, n_samples=50000, random_state=42)
+    # Actual training of knn
+    knn_gscv.fit(X_train_scaled, y_train)
 
-    # knn_gscv.fit(X_train_sample, y_train_sample)
+    # SMALL SAMPLE TO AVOID RUNNING HUGE DATASET
+    X_train_sample, y_train_sample = resample(X_resampled, y_resampled, n_samples=50000, random_state=42)
+    X_test_sample, y_test_sample = resample(X_test_resampled, y_test_resampled, n_samples=50000, random_state=42)
 
-    # print(knn_gscv.best_params_)
-    # print("Training accuracy:", knn_gscv.best_score_)
-    # print("Test accuracy:", knn_gscv.score(X_test_sample, y_test_sample))
+    knn_gscv.fit(X_train_sample, y_train_sample)
 
-    # y_pred = knn_gscv.predict(X_test_sample)
-    # print("Precision:", precision_score(y_test_sample, y_pred))
-    # print("Recall:", recall_score(y_test_sample, y_pred))
+    print(knn_gscv.best_params_)
+    print("Training accuracy:", knn_gscv.best_score_)
+    print("Test accuracy:", knn_gscv.score(X_test_sample, y_test_sample))
+
+    y_pred = knn_gscv.predict(X_test_sample)
+    print("Precision:", precision_score(y_test_sample, y_pred))
+    print("Recall:", recall_score(y_test_sample, y_pred))

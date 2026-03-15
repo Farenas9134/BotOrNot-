@@ -18,7 +18,4 @@ TWITTER_HUMAN_DATASET = PROJECT_ROOT / 'Datasets' / 'twitter-human-bots-english.
 
 TWIBOT_DATASET = PROJECT_ROOT / 'Datasets' / 'twiBot22_v3.csv'
 
-
-# if __name__ == "__main__":
-#     print("HELLO")
-#     print(PROJECT_ROOT)
+COMBINED_TWIBOT_DATASET = PROJECT_ROOT / 'Datasets' / 'combined_twiBot_output.csv'

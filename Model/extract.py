@@ -57,22 +57,6 @@ def setFeaturesdf(df):
 
     return cleaned_df
 
-# def addTweet(tweet, rows):
-#     '''
-#         Adds a tweet into a list of tweets for easy access to extract features
-#     '''
-#     row = extractTweetFeatures(tweet)
-#     rows.append(row)
-#     return
-
-# def addName(name, rows):
-#     '''
-#         Adds a name into a list of names for easy access to extract features
-#     '''
-#     row = extractNameFeatures(name)
-#     rows.append(row)
-#     return
-
 def extractTweetFeatures(tweet, pos_dict):
     '''
         Extracts the following features: 
@@ -298,17 +282,11 @@ def cleanup(df):
     df.insert(len(df.columns), 'label', label_column)
 
     # Turn TRUE/FALSE into binary value (0/1)
-    # df['default_profile'] = df['default_profile'].astype(int)
-    # df["default_profile_image"] = df['default_profile_image'].astype(int)
     df["verified"] = df["verified"].astype(int)
     df["protected"] = df["protected"].astype(int)
-
-    # df["geo_enabled"] = df["geo_enabled"].astype(int)
 
     # Turn Human = 0, Bot = 1
     df['label'] = df['label'].replace({'human': 1, 'bot': 0})
     df['tweet_sentiment_score'] = df['tweet_sentiment_score'].replace({'Positive': 0, 'Negative': 1, 'Neutral': 2})
     
-    # df['created_at'] = df['created_at'].apply(lambda timestamp: int((datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")).timestamp()))
-
     return df

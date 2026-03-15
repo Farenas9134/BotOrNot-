@@ -11,21 +11,18 @@ from sklearn.ensemble import RandomForestClassifier
 
 from paths import *
 
-# Paper guide
 '''
-    1. Optimize the number of trees in the forest that is used to contruct the RF
+    Optimize the number of trees in the forest that is used to contruct the RF
         a. Done with Out-of-bag error (which calculates the misclassification probability for out-of-bag observations in the training set)
         b. varying number of trees from 10 to 300 (they found 250 to be perfect for them)
     
-    2. Run RF with optimized number of trees to calcultae importance score for each feature
+    Run RF with optimized number of trees to calcultae importance score for each feature
         a. Calculate the importance score of each of the n features, where n = 51
         b. Rank the n features by the importance score in decreasing order
         c. Apply the first k features to the RF classifer, for k = 1 to n, and select the features involved
             in the classifier producing the lowest mean absolute error (MAE)
     
     OUTPUT: k features producing lowest MAE (mean absolute error)
-
-    3. Feed features into 
 '''
 
 def randomForest(X, y):
@@ -42,11 +39,11 @@ def randomForest(X, y):
     print("Best error score:", error_scores[best_k_features_size])
 
     # Plot MAE vs number of selected features
-    # plt.plot(range(1, len(error_scores)+1), error_scores)
-    # plt.xlabel("Number of Features")
-    # plt.ylabel("Cross-Validated MAE")
-    # plt.title("MAE vs Number of Selected Features")
-    # plt.show()
+    plt.plot(range(1, len(error_scores)+1), error_scores)
+    plt.xlabel("Number of Features")
+    plt.ylabel("Cross-Validated MAE")
+    plt.title("MAE vs Number of Selected Features")
+    plt.show()
 
     optimized_features = get_top_k_features(X, y, tree_count, best_k_features_size)
 
@@ -157,13 +154,6 @@ def get_top_k_features(X, y, tree_count, k):
 
     for index in top_k_indices:
         top_features_dict[index] = importances[index]
-
-    print(top_features_dict)
-
-    with open('ALL_FEATURES_RANKED.txt', 'w') as f:
-        # Redirect standard output to the file
-        sys.stdout = f
-        print(top_features_dict)
 
     # Get feature names of top-k indices
     top_k_feature_names = X.columns[top_k_indices]
