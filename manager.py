@@ -1,6 +1,7 @@
 from paths import *
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from Model.extract import *
 
 from sklearn.ensemble import RandomForestClassifier
@@ -85,8 +86,37 @@ if __name__ == "__main__":
     )
     final_rf.fit(X_resampled, y_resampled)
 
+    y_probs = final_rf.predict_proba(X_test_reduced)[:, 1]
+
+    # Evaluating predicted values with different threshold values
+    threshold_values = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    balanced_accuracy_score_list = []
+    mcc_score_list = []
+    
+    for value in threshold_values:
+        y_pred = (y_probs >= value).astype(int)
+        balanced_accuracy_score_list.append(balanced_accuracy_score(y_test, y_pred))
+        mcc_score_list.append(matthews_corrcoef(y_test, y_pred))
+    
     # Evaluate
-    y_pred = final_rf.predict(X_test_reduced)
-    print(classification_report(y_test, y_pred, target_names=['bot', 'human']))
-    print("Balanced accuracy:", balanced_accuracy_score(y_test, y_pred))
-    print("MCC:", matthews_corrcoef(y_test, y_pred))
+    # y_pred = final_rf.predict(X_test_reduced)
+    # print(classification_report(y_test, y_pred, target_names=['bot', 'human']))
+    # print("Balanced accuracy:", balanced_accuracy_score(y_test, y_pred))
+    # print("MCC:", matthews_corrcoef(y_test, y_pred))
+
+    x = np.arange(len(threshold_values))
+    width = 0.35
+
+    fig,ax = plt.subplots()
+    rectangles1 = ax.bar(x - width/2, balanced_accuracy_score_list, width,
+                         label="Balanced Score", color="blue")
+    rectangles2 = ax.bar(x + width/2, mcc_score_list, width,
+                         label="MCC Score", color="orange")
+
+    ax.set_title("Accuracy and MCC for Various Thresholds")
+    ax.set_xlabel("Threshold Value")
+    ax.set_ylabel("Value")
+    ax.set_xticks(x)
+    ax.set_xticklabels(threshold_values)
+    ax.legend(loc="upper left")
+    plt.show()
