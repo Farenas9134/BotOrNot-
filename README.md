@@ -2,6 +2,8 @@
 
 **Authors: Francisco Arenas & Shalim Montes Hernandez**
 
+**GitHub Link: https://github.com/Farenas9134/BotOrNot-**
+
 ### Project Details
 Social media bots are automated software that simulate human behavior to perform a range of tasks like boosting stats and engagements on posts via likes, views, and comments. While
 these relatively benign goals may appear harmless, automated bots are far more concerning when used for malicious purposes. Recent bots have been tasked with goals such as pushing extremist propaganda, impersonating real people, or attempting to steal personal information from human users by appealing to carnal desires. This combination of malicious-oriented automated programs and increased deployment of these bots calls for a critical analysis of public online activity on social media platforms. 
