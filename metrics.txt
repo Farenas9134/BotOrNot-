@@ -4,7 +4,7 @@ Bot:   115,259
 
 Issues? 7:1 ratio, any model will have difficulty learning patterns when guessing human will result in ~85% acc
     - Prevelant in our KNN testing with a resampling with a ration of 7:1 just scaled down
-        - It got a 88% but recall was almost a perfect 1, meaning it guess human every time
+        - It got a 88% but recall was almost a perfect 1, meaning it guesses human every time
 
 Solution: Undersampling the majority class to make a 2:1 ratio
 
@@ -158,7 +158,7 @@ weighted avg       0.87      0.81      0.83    186775
 Balanced accuracy: 0.733357659110742
 MCC: 0.3723817336680567
 
-SMOTE stuff with dropping noisey features:
+SMOTE stuff with dropping noisy features:
     Before SMOTE: label
     1    131499
     0     18501
