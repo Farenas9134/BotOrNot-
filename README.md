@@ -2,7 +2,7 @@
 
 **Authors: Francisco Arenas & Shalim Montes Hernandez**
 
-**GitHub Link: https://github.com/Farenas9134/BotOrNot-**
+GitHub Link: https://github.com/Farenas9134/BotOrNot-
 
 ### Project Details
 Social media bots are automated software that simulate human behavior to perform a range of tasks like boosting stats and engagements on posts via likes, views, and comments. While
